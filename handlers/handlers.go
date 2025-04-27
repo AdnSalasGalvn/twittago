@@ -10,26 +10,25 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models.ApiResponse {
-	fmt.Println("Voy a procesar " + ctx.Value(models.Key("path")).(string) + " > " + ctx.Value(models.Key("method")).(string))
+func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models.ApiResponse { // This function handles the request and returns a response
 
-	var response models.ApiResponse
-	response.Status = 400
+	var response models.ApiResponse // create a new response object
+	response.Status = 400           // set the default status to 400
 
-	isOk, statusCode, msg, _ := ValidateAuthorization(ctx, request)
+	isOk, statusCode, msg, _ := ValidateAuthorization(ctx, request) // validate the authorization of the request
 
-	if !isOk {
-		response.Status = statusCode
-		response.Message = msg
+	if !isOk { // if the authorization is not valid, return an error and a message
+		response.Status = statusCode // set the status code to the one returned by the validation function
+		response.Message = msg       // set the message to the one returned by the validation function
 		return response
 	}
 
-	switch ctx.Value(models.Key("method")).(string) {
+	switch ctx.Value(models.Key("method")).(string) { // check the method of the request
 
-	case "POST":
-		switch ctx.Value(models.Key("path")).(string) {
-		case "register":
-			return routers.Register(ctx)
+	case "POST": // if the method is POST, check the path of the request
+		switch ctx.Value(models.Key("path")).(string) { // check the path of the request
+		case "register": // if the path is register, call the register function
+			return routers.Register(ctx) // call the register function and return the response
 		}
 	case "GET":
 		switch ctx.Value(models.Key("path")).(string) {
@@ -44,39 +43,40 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 
 		}
 	}
+	// if the method is not valid, return an error and a message
 	response.Message = "Method Invalid"
 	return response
 }
 
-func ValidateAuthorization(ctx context.Context, request events.APIGatewayProxyRequest) (bool, int, string, models.Claim) { // 	función que valida la autorización del token JWT
+func ValidateAuthorization(ctx context.Context, request events.APIGatewayProxyRequest) (bool, int, string, models.Claim) { // This function validates the authorization of the request
+	// check if the path is valid and if the method is valid
 
 	path := ctx.Value(models.Key("path")).(string)
-	if path == "register" || path == "login" || path == "getAvatar" || path == "getBanner" { // si es un path que no requiere autorización
-		return true, 200, "", models.Claim{} // retorna true
+	if path == "register" || path == "login" || path == "getAvatar" || path == "getBanner" { // if the path is valid, return true
+		return true, 200, "", models.Claim{} // return true
 	}
 
-	token := request.Headers["Authorization"]
+	token := request.Headers["Authorization"] // get the token from the request headers
 
-	fmt.Println("(Archivo handlers.go) Valor del token recibido:", token)
-
-	if len(token) == 0 { // si no hay token
-		return false, 401, "Token requerido", models.Claim{} // retorna error
+	if len(token) == 0 { // if the token is empty, return false
+		return false, 401, "Token requerido", models.Claim{} // return false
 	}
 
-	claim, allOK, msg, err := jwt.ProcessToken(token, ctx.Value(models.Key("jwtsign")).(string)) // llama a la función ProcessToken
+	claim, allOK, msg, err := jwt.ProcessToken(token, ctx.Value(models.Key("jwtsign")).(string)) // process the token and get the claims
 
-	if !allOK { // si no es válido el token
-		if err != nil { // si hay un error en el token
-			fmt.Println("Error en el token: " + err.Error()) // imprime el error
-			fmt.Println("NO AllOk: err != nil")              // imprime el error
-			return false, 401, err.Error(), models.Claim{}   // retorna error
-		} else { // si el token no es válido
-			fmt.Println("Error en el token: " + msg) // 	imprime el error
-			fmt.Println("NO AllOk: Else")            // imprime el error
-			return false, 401, msg, models.Claim{}   // retorna error
+	if !allOK { // if the token is not valid, return false
+		if err != nil {
+			fmt.Println("Error en el token: " + err.Error()) // print the error
+			fmt.Println("NO AllOk: err != nil")
+			return false, 401, err.Error(), models.Claim{} // return false
+		} else { // if err is nil, return false
+			fmt.Println("Error en el token: " + msg) // print the error
+			fmt.Println("NO AllOk: Else")
+			return false, 401, msg, models.Claim{} // return false, msg is the error message, claim is the claims, which is empty
 		}
 	}
 
-	fmt.Println("Token Ok")       // imprime el token
-	return true, 200, msg, *claim // retorna el token y el error
+	// end of the token validation, token is valid and we can use the claim
+	fmt.Println("Token Ok")
+	return true, 200, msg, *claim
 }
