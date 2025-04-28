@@ -8,18 +8,19 @@ import (
 )
 
 func InsertRecord(u models.User) (string, bool, error) {
-	ctx := context.TODO()
-	database := MongoClient.Database(DatabaseName)
+	ctx := context.TODO()                          // context for the database connection
+	database := MongoClient.Database(DatabaseName) // database connection
 
-	databasecollection := database.Collection("users")
+	databasecollection := database.Collection("users") // collection name
 
-	u.Password, _ = EncryptPassword(u.Password)
+	// create a new collection for the user
+	u.Password, _ = EncryptPassword(u.Password) // encrypt the password
 	result, err := databasecollection.InsertOne(ctx, u)
 
-	if err != nil {
+	if err != nil { // if there is an error inserting the user, return an error and a message
 		return "", false, err
 	}
 
-	ObjID, _ := result.InsertedID.(primitive.ObjectID)
+	ObjID, _ := result.InsertedID.(primitive.ObjectID) // get the ID of the inserted user
 	return ObjID.String(), true, nil
 }
