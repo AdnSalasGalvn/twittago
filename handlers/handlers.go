@@ -37,7 +37,8 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 		switch ctx.Value(models.Key("path")).(string) {
 		case "seeprofile": // if the path is seeProfile, call the seeProfile function
 			return routers.SeeProfile(request) // call the seeProfile function and return the response
-
+		case "readtweets": // if the path is readTweet, call the readTweet function
+			return routers.ReadTweets(request) // call the readTweet function and return the response
 		}
 	case "PUT":
 		switch ctx.Value(models.Key("path")).(string) {
