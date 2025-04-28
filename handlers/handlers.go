@@ -13,7 +13,7 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 	var response models.ApiResponse // create a new response object
 	response.Status = 400           // set the default status to 400
 
-	isOk, statusCode, msg, _ := ValidateAuthorization(ctx, request) // validate the authorization of the request
+	isOk, statusCode, msg, claim := ValidateAuthorization(ctx, request) // validate the authorization of the request
 
 	if !isOk { // if the authorization is not valid, return an error and a message
 		response.Status = statusCode // set the status code to the one returned by the validation function
@@ -38,6 +38,8 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 		}
 	case "PUT":
 		switch ctx.Value(models.Key("path")).(string) {
+		case "modifyprofile": // if the path is modifyProfile, call the modifyProfile function
+			return routers.ModifyProfile(ctx, claim) // call the modifyProfile function and return the response
 
 		}
 	case "DELETE":
