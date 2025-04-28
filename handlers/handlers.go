@@ -31,7 +31,6 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 			return routers.Login(ctx) // call the login function and return the response
 		case "tweet": // if the path is tweet, call the tweet function
 			return routers.Tweet(ctx, claim) // call the tweet function and return the response
-
 		}
 	case "GET":
 		switch ctx.Value(models.Key("path")).(string) {
@@ -48,6 +47,8 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 		}
 	case "DELETE":
 		switch ctx.Value(models.Key("path")).(string) {
+		case "deletetweet": // if the path is deleteTweet, call the deleteTweet function
+			return routers.DeleteTweet(request, claim) // call the deleteTweet function and return the response
 
 		}
 	}
