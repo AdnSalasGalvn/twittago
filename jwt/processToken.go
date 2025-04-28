@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"twitta/database"
 	"twitta/models"
 
 	jwt "github.com/golang-jwt/jwt/v5"
@@ -39,11 +40,19 @@ func ProcessToken(tk string, JWTSign string) (*models.Claim, bool, string, error
 			return myKey, nil // retorna la llave secreta
 		},
 	)
+
 	if err != nil {
+
 		fmt.Printf(
 			"Ocurrio un error el intentar parsear el token: %s \n", err.Error(),
 		)
 		return &claims, false, string(""), err
+	} else {
+		_, found, _ := database.CheckUserAlreadyExist(claims.Email)
+		if found {
+			Email = claims.Email     // guarda el email del usuario en la variable global Email
+			IDUser = claims.ID.Hex() // guarda el ID del usuario en la variable global IDUser
+		}
 	}
 
 	if !token.Valid { // si el token no es válido
