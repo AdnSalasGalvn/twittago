@@ -29,6 +29,9 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 			return routers.Register(ctx) // call the register function and return the response
 		case "login": // if the path is login, call the login function
 			return routers.Login(ctx) // call the login function and return the response
+		case "tweet": // if the path is tweet, call the tweet function
+			return routers.Tweet(ctx, claim) // call the tweet function and return the response
+
 		}
 	case "GET":
 		switch ctx.Value(models.Key("path")).(string) {
