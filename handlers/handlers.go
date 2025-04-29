@@ -60,7 +60,8 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 		switch ctx.Value(models.Key("path")).(string) {
 		case "deletetweet": // if the path is deleteTweet, call the deleteTweet function
 			return routers.DeleteTweet(request, claim) // call the deleteTweet function and return the response
-
+		case "unsubscriberelationship": // if the path is deleteTweet, call the deleteTweet function
+			return routers.UnsubscribeRelationship(request, claim) // call the deleteTweet function and return the response
 		}
 	}
 	// if the method is not valid, return an error and a message
