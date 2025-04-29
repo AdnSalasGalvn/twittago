@@ -42,6 +42,11 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 			return routers.SeeProfile(request) // call the seeProfile function and return the response
 		case "readtweets": // if the path is readTweet, call the readTweet function
 			return routers.ReadTweets(request) // call the readTweet function and return the response
+		case "getAvatar": // if the path is getAvatar, call the getAvatar function
+			return routers.GetImage(ctx, "avatar", request, claim) // call the getAvatar function and return the response
+		case "getBanner": // if the path is getBanner, call the getBanner function
+			return routers.GetImage(ctx, "banner", request, claim) // call the getBanner function and return the response
+
 		}
 	case "PUT":
 		switch ctx.Value(models.Key("path")).(string) {
