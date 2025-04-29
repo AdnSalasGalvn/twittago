@@ -31,7 +31,9 @@ func Handlers(ctx context.Context, request events.APIGatewayProxyRequest) models
 			return routers.Login(ctx) // call the login function and return the response
 		case "tweet": // if the path is tweet, call the tweet function
 			return routers.Tweet(ctx, claim) // call the tweet function and return the response
-		case "uploadAvatar": // if the path is uploadAvatar, call the uploadAvatar function
+		case "registerrelationship": // if the path is tweet, call the tweet function
+			return routers.RegisterRelationship(ctx, request, claim) // call the tweet function and return the response
+		case "uploadAvatar": // if the path is uploadAvatar, call the uploadAvatar function´
 			return routers.UploadImage(ctx, "avatar", request, claim) // call the uploadAvatar function and return the response
 		case "uploadBanner": // if the path is uploadBanner, call the uploadBanner function
 			return routers.UploadImage(ctx, "banner", request, claim) // call the uploadBanner function and return the response
